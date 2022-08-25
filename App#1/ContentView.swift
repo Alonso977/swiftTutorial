@@ -6,83 +6,269 @@
 //
 
 import SwiftUI
-import CoreData
 
 struct ContentView: View {
-    @Environment(\.managedObjectContext) private var viewContext
-
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
-        animation: .default)
-    private var items: FetchedResults<Item>
-
+    
+    
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp!, formatter: itemFormatter)")
-                    } label: {
-                        Text(item.timestamp!, formatter: itemFormatter)
-                    }
-                }
-                .onDelete(perform: deleteItems)
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
-                }
-            }
-            Text("Select an item")
-        }
+        Home()
     }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
-        }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            offsets.map { items[$0] }.forEach(viewContext.delete)
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
-        }
-    }
+    
+    
 }
 
-private let itemFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .short
-    formatter.timeStyle = .medium
-    return formatter
-}()
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+        ContentView()
+    }
+}
+
+struct Home: View {
+    @State var color = 0
+    @State var height = UIScreen.main.bounds.height
+    @State var widht = UIScreen.main.bounds.width
+    
+    var body: some View {
+        VStack {
+            
+            ZStack(alignment: .top){
+                VStack{
+                    Image(self.color == 0 ? "shoes" : "shoes1")
+                        .resizable()
+                        .frame(height: 350)
+                    
+                    HStack(spacing: 20){
+                        
+                        //                        Boton para cambiar a rojo
+                        Button(action : {
+                            
+                            self.color = 0
+                            
+                        }) {
+                            
+                            VStack(spacing: 8) {
+                                ZStack {
+                                    Circle()
+                                        .fill(Color.blue)
+                                        .frame(width: 20, height: 20)
+                                    Circle()
+                                        .stroke(self.color == 0 ? Color.white : Color.clear, lineWidth: 2)
+                                        .frame(width: 30, height: 30)
+                                }
+                                Text("Blue")
+                                    .foregroundColor(.white)
+                                    .font(.caption)
+                                
+                            }
+                        }
+                        
+                        //                        Boton para cambiar el color a naranja
+                        Button(action : {
+                            
+                            self.color = 1
+                            
+                        }) {
+                            
+                            VStack(spacing: 8) {
+                                ZStack {
+                                    Circle()
+                                        .fill(Color.orange)
+                                        .frame(width: 20, height: 20)
+                                    Circle()
+                                        .stroke(self.color == 1 ? Color.white : Color.clear, lineWidth: 2)
+                                        .frame(width: 30, height: 30)
+                                }
+                                Text("Orange")
+                                    .foregroundColor(.white)
+                                    .font(.caption)
+                                
+                            }
+                        }
+                        
+                        
+                        
+                    }
+                    .padding(.top, 15)
+                    .padding(.bottom, 10)
+                }
+                
+                HStack {
+                    //                    Boton para volver
+                    Button(action: {
+                        
+                    }, label: {
+                        Image("back")
+                            .renderingMode(.original)
+                            .padding()
+                    })
+                    .padding(.leading, 10)
+                    .padding(.top, 20)
+                    
+                    Spacer()
+                    
+                    //                    Boton del carrito de compras
+                    Button(action: {
+                        
+                    }, label: {
+                        Image("cart")
+                            .renderingMode(.original)
+                            .padding()
+                    })
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, self.height>800 ? 15 : 10)
+                    .background(Color.white)
+                    .clipShape(CustomShape(corner: .bottomLeft, radii: self.height>800 ? 35 : 30))
+                    
+                }
+                
+            }
+            //            parte inferior de cambio de colores
+            .background(self.color == 0 ? Color.blue : Color.orange)
+            .clipShape(CustomShape(corner: .bottomLeft, radii: 55))
+            
+            
+            //Dispositivos pequenios
+            ScrollView(self.height > 800 ? .init() : .vertical, showsIndicators: false) {
+                ScrollView {
+                    VStack {
+                        HStack {
+                            //                        Texto del titulo del articulo
+                            Text("Melodi Lamp")
+                                .font(.title)
+                                .fontWeight(.bold)
+                            
+                            Spacer()
+                            
+                            //                      Boton de LIKE
+                            Button(action : {
+                                
+                            }) {
+                                Image("heart")
+                                    .renderingMode(.original)
+                                    .padding()
+                                    .foregroundColor(Color.white)
+                            }
+                            .background(self.color == 0 ? Color.blue : Color.orange)
+                            .clipShape(Circle())
+                        }
+                        .padding(.horizontal, 35)
+                        .padding(.top, 25)
+                        
+                        
+                        //                    Texto de la descripcion
+                        Text(self.color == 0 ? "Blue Air force new generetion new look" : "Nueva generacion de zapatos unisex")
+                            .multilineTextAlignment(.leading)
+                            .foregroundColor(.gray)
+                            .padding(.horizontal, 30)
+                            .padding(.top, 20)
+                        
+                        Spacer(minLength: 0)
+                        
+                        HStack(spacing: 10) {
+                            //   Botones de opciones del articulo.
+                            Button(action: {
+                                
+                            }) {
+                                VStack {
+                                    Image("shoe-icon")
+                                        .renderingMode(.original)
+                                    Text("22 W")
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.black)
+                                }
+                                .padding()
+                            }
+                            .background(Color.black.opacity(0.06))
+                            .cornerRadius(12)
+                            
+                            Button(action: {
+                                
+                            }) {
+                                VStack {
+                                    Image(self.color == 0 ? "mat1" : "delivery")
+                                        .renderingMode(.original)
+                                    Text("24 CM")
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.black)
+                                }
+                                .padding()
+                            }
+                            .background(Color.black.opacity(0.06))
+                            .cornerRadius(12)
+                            
+                            Button(action: {
+                                
+                            }) {
+                                VStack {
+                                    Image(self.color == 0 ? "mat3" : "box")
+                                        .renderingMode(.original)
+                                    Text("1.6 M")
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.black)
+                                }
+                                .padding()
+                            }
+                            .background(Color.black.opacity(0.06))
+                            .cornerRadius(12)
+                            
+                        }
+                        .padding(.top, 20)
+                        .padding(.bottom, 25)
+                        Spacer(minLength: 0)
+                        
+                    }
+                }
+            }
+            
+            //Dispositivos pequenios
+            
+            
+            HStack {
+                //                Texto del precio
+                Text(self.color == 0 ? "$24.99" : "$99.99")
+                    .foregroundColor(.black)
+                    .font(.title)
+                    .fontWeight(.bold)
+                    .padding(.leading, 35)
+                    .padding(.bottom, 25)
+                
+                Spacer()
+                
+                //            Boton para agregar al carrito
+                Button(action: {
+                    
+                }) {
+                    Text("Add to Cart")
+                        .foregroundColor(.black)
+                        .padding(.vertical, 22)
+                        .padding(.horizontal, 35)
+                }
+                .background(self.color == 0 ? Color.blue : Color.orange)
+                .clipShape(CustomShape(corner: .topLeft, radii: 55))
+                
+            }
+            
+            
+        }
+        .edgesIgnoringSafeArea(.all)
+        .statusBar(hidden: true)
+    }
+}
+
+
+struct CustomShape: Shape {
+    var corner : UIRectCorner
+    var radii : CGFloat
+    
+    func path(in rect : CGRect) -> Path {
+        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corner, cornerRadii: CGSize(width: radii, height: radii))
+        return Path(path.cgPath)
+    }
+}
+
+class Host : UIHostingController<ContentView> {
+    override var  prefersHomeIndicatorAutoHidden: Bool{
+        return true
     }
 }
