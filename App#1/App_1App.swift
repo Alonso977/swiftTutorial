@@ -14,7 +14,9 @@ struct App_1App: App {
     var body: some Scene {
         WindowGroup {
 //            ContentView()
-            HomeDating()
+//            App_3()
+//            HomeFruit()
+            App_5()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }
